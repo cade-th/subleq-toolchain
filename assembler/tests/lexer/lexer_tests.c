@@ -28,7 +28,7 @@ Token expected_2[] = {
 	{" ", Eof}
 };
 
-bool lexer_basic_test(char *input, int expected_tokens_size, Token expected_tokens[]) {
+static bool lexer_basic_test(char *input, int expected_tokens_size, Token expected_tokens[]) {
 	
 
 	Lexer lexer = lexer_init(input);
@@ -49,7 +49,7 @@ bool lexer_basic_test(char *input, int expected_tokens_size, Token expected_toke
 	return true;
 }
 
-bool lexer() {
+static bool lexer() {
 	return lexer_basic_test(input_2, 13, expected_2);	
 }
 

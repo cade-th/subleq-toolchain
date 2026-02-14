@@ -3,18 +3,19 @@
 #include <stdbool.h>
 #include <string.h>
 
-Token subleq_1[] = {
+
+static Token subleq_1[] = {
 	{"0", INT},
 	{"1", INT},
 	{"3", INT},
 	{" ", Eof}
 };
 
-ParsedInstruction expected_1[] = {
+static ParsedInstruction expected_1[] = {
 	{"subleq", "0", "1", "3", 0},
 };
 
-Token subleq_2[] = {
+static Token subleq_2[] = {
 	{"0", INT},
 	{"1", INT},
 	{"2", INT},
@@ -24,13 +25,13 @@ Token subleq_2[] = {
 	{" ", Eof}
 };
 
-ParsedInstruction expected_2[] = {
+static ParsedInstruction expected_2[] = {
 	{"subleq", "0", "1", "2", 0},
 	{"subleq", "3", "4", "5", 0},
 };
 
 
-Token subleq_3[] = {
+static Token subleq_3[] = {
 	{"#", HASH},
 	{"define", SYMBOL},
 	{"VAR", SYMBOL},
@@ -46,12 +47,12 @@ Token subleq_3[] = {
 	{" ", Eof}
 };
 
-ParsedInstruction expected_3[] = {
-	
+static ParsedInstruction expected_3[] = {
+
 };
 
 
-bool parser_test(
+static bool parser_test(
 	int test_num,
 	Token *input_tokens, 
 	ParsedInstruction expected_output[], 
@@ -83,7 +84,7 @@ bool parser_test(
 }
 
 // need this because the macro for pretty test colors wont take arguments for functions
-bool parser() {
+static bool parser() {
 	return parser_test(1,subleq_1, expected_1, 1) && parser_test(2,subleq_2, expected_2, 2);
 }
 

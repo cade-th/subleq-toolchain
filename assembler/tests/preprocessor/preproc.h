@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../tests.h"
 
-void run_encoder_tests();
+void run_preproc_tests();

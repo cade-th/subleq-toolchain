@@ -24,7 +24,7 @@ static uint8_t expected_2[] = {
 };
 
 
-bool encoder_test(
+static	bool encoder_test(
 	int test_num,
 	uint8_t expected[],
 	ParsedInstruction input[],
@@ -44,7 +44,7 @@ bool encoder_test(
 	return true;
 }
 
-bool encoder() {
+static bool encoder() {
 	return encoder_test(1, expected_1,input_1, 3) && encoder_test(2, expected_2,input_2, 6);
 }
 

@@ -28,7 +28,7 @@ static uint8_t expected_2[] = {
 
 
 
-bool full_test(
+static bool full_test(
 	int test_num,
 	char *src_code,
 	uint8_t expected[],
@@ -49,7 +49,7 @@ bool full_test(
 
 }
 
-bool full() {
+static bool full() {
 	return full_test(1,src_code_1, expected_1, 3) && full_test(2,src_code_2, expected_2, 6);
 }
 

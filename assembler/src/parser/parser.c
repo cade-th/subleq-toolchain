@@ -23,18 +23,9 @@ Parser parser_init(Token *input) {
 	};
 	return parser;
 }
-
 static void consume(Parser *self) {
 	self->current_tok = self->input[self->read_position];	
 	self->read_position++;
-}
-
-void parse_macro(Parser *self) {
-		
-}
-
-void parse_label(Parser *self) {
-	consume(self);
 }
 
 // just trying to parse a single instruction for now
