@@ -7,6 +7,7 @@ typedef enum {
 	COLON,
 	INT,
 	SYMBOL,
+	LABEL,
 	Eof,
 	ILLEGAL
 } Token_t;

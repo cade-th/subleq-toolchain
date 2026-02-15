@@ -17,19 +17,19 @@
     ARRAY_PUSH((h)[_idx], v); \
 } while(0)
 
-// Updated HASH_FIND with Type (T) parameter
-#define HASH_FIND(h, s, out_ptr, T) do { \
+#define HASH_FIND(h, s, T) ({ \
+    T* _result = NULL; \
     T* _bucket = (T*)HASH_GET_BUCKET(h, s); \
-    (out_ptr) = NULL; \
     if (_bucket) { \
         for (int _i = 0; _i < ARRAY_LENGTH(_bucket); _i++) { \
             if (strcmp(_bucket[_i].key, (s)) == 0) { \
-                (out_ptr) = &(_bucket[_i]); \
+                _result = &(_bucket[_i]); \
                 break; \
             } \
         } \
     } \
-} while(0)
+    _result; \
+})
 
 // hash function
 int hash(char *string);

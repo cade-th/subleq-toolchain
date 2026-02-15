@@ -58,12 +58,17 @@ static char *read_number(Lexer *self) {
 }
 
 static char *read_symbol(Lexer *self) {
-    int position = self->position;
-    // Symbols usually allow letters, numbers (after the first char), and underscores
-    while (isalnum(self->ch) || self->ch == '_') {
-        read_char(self);
-    }
-    return strndup(self->input + position, self->position - position);
+	int position = self->position;
+    
+	// Allow '.' at the start for local labels
+	if (self->ch == '.') {
+		read_char(self);
+	}
+
+	while (isalnum(self->ch) || self->ch == '_') {
+		read_char(self);
+	}
+	return strndup(self->input + position, self->position - position);
 }
 
 Token next_token(Lexer *self) {
@@ -77,24 +82,36 @@ Token next_token(Lexer *self) {
 	switch (self->ch) {
 		case '#': tok.type = HASH; tok.literal = strdup("#"); break;
 		case '$': tok.type = DOLLAR; tok.literal = strdup("$"); break;
-		case ':': tok.type = COLON; tok.literal = strdup(":"); break;
 		case ';': {
 			remove_comment(self);
 			return next_token(self);
 		}
-		case 0: tok.type = Eof; tok.literal = strdup(" "); break;
-
+		case 0: 
+		    tok.type = Eof; 
+		    tok.literal = strdup(" "); 
+		    return tok; // Return immediately!
 		default:
 			if (isdigit(self->ch)) {
 				tok.type = INT;
 				tok.literal = read_number(self);
 				return tok;
 			}
-			else if (isalpha(self->ch)) {
-				tok.type = SYMBOL;
-				tok.literal = read_symbol(self);
+
+			else if (isalpha(self->ch) || self->ch == '.' || self->ch == '_') {
+				char *literal = read_symbol(self);
+		    
+				// PEEK: Is the current character a colon?
+				if (self->ch == ':') {
+					tok.type = LABEL; 
+					tok.literal = literal;
+					read_char(self); // Consume the ':' so it's not processed again
+				} else {
+					tok.type = SYMBOL;
+					tok.literal = literal;
+				}
 				return tok;
 			}
+				
 			else {
 				tok.type = ILLEGAL;
 				tok.literal = strndup(&self->ch, 1);
@@ -108,7 +125,9 @@ Token next_token(Lexer *self) {
 }
 
 void skip_whitespace(Lexer *self) {
-	while (self->ch == ' ' || self->ch == '\t' || self->ch == '\n' || self->ch == '\r') {
-		read_char(self);
-	}
+    // Use isspace() from <ctype.h> to catch all types of whitespace
+    while (isspace(self->ch) || self->ch == (char)0xA0) { 
+        read_char(self);
+    }
 }
+

@@ -1,6 +1,8 @@
 #include "parser_tests.h"
 #include "../../src/parser/parser.h"
+#include "../lexer/lexer_tests.h"
 #include <stdbool.h>
+#include "../../src/util/io.h"
 #include <string.h>
 
 
@@ -37,7 +39,6 @@ static Token subleq_3[] = {
 	{"VAR", SYMBOL},
 	{"7", INT},	
 	{"START", SYMBOL},
-	{":", COLON},
 	{"10", INT},
 	{"10", INT},
 	{"3", INT},
@@ -47,9 +48,106 @@ static Token subleq_3[] = {
 	{" ", Eof}
 };
 
-static ParsedInstruction expected_3[] = {
-
+static Token expected_firstPass_1[] = {
+	{"34", INT},
+	{"5", INT},
+	{"3", INT},
+	{"23", INT},
+	{"5", INT},
+	{"LOOP", SYMBOL},
+	{"45", INT},
+	{"3", INT},
+	{"6", INT},
 };
+
+static bool parser_passOne_test(
+	int test_num,
+	char *path,
+	Token *expected,
+	int expected_size
+) {
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+	Parser parser = parser_init(tokens);
+
+	Token *output = parser_pass_one(&parser);
+	
+	// compare the token output
+	for (int i=0; i < expected_size; i++) {
+		if (!compare_tokens(i, expected[i], output[i])) {
+			return false;
+		}
+	}
+
+	// compare the symbol table output
+	ST_Entry *symbol_1 = HASH_FIND(parser.symbol_table, "START", ST_Entry);
+	ST_Entry *symbol_2 = HASH_FIND(parser.symbol_table, "LOOP", ST_Entry);
+
+	
+	// Check if the correct insertions to the Symbol Table are done
+	if (strcmp(symbol_1->key, "START") != 0) {
+		printf("Wrong key for START\n");
+		return false; 
+	}
+	if (strcmp(symbol_2->key, "LOOP") != 0) {
+		printf("Wrong key for LOOP\n");
+		return false; 
+	}
+
+	// check the address of the labels
+	if (symbol_1->address != 0) {
+		printf("Wrong address for START\n");
+		return false;
+	}
+	
+	if (symbol_2->address != 0x0006 ) {
+		printf("Wrong address for LOOP, got %x\n", symbol_2->address);
+		return false;
+	}
+
+	return true;
+}
+
+static bool parser_passTwo_test(
+	int test_num,
+	char *path,
+	Token *input_tokens, 
+	ParsedInstruction expected_output[], 
+	int expected_size
+	) {
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+	Parser parser = parser_init(tokens);
+
+	Token *output = parser_pass_one(&parser);
+
+
+
+
+
+	for (int i=0; i < expected_size; i++) {
+		if (strcmp(output[i].label, expected_output[i].label) != 0) {
+			printf("Wrong label for index %d on test number %d\n", i, test_num); return false;
+		}
+		if (strcmp(output[i].op_a, expected_output[i].op_a) != 0) {
+			printf("Wrong op_a for index %d on test number %d\n", i, test_num); return false;
+		}
+		if (strcmp(output[i].op_b, expected_output[i].op_b) != 0) {
+			printf("Wrong op_b for index %d on test number %d\n", i, test_num); return false;
+		}
+		if (strcmp(output[i].op_c, expected_output[i].op_c) != 0) {
+			printf("Wrong op_c for index %d on test number %d\n", i, test_num); return false;
+		}
+		if (output[i].address != expected_output[i].address) {
+			printf("Wrong starting address for index %d on test number %d,\n", i, test_num); return false;
+		}
+	}
+	
+	return true;
+}
+
 
 
 static bool parser_test(
@@ -85,7 +183,11 @@ static bool parser_test(
 
 // need this because the macro for pretty test colors wont take arguments for functions
 static bool parser() {
-	return parser_test(1,subleq_1, expected_1, 1) && parser_test(2,subleq_2, expected_2, 2);
+	return 
+		parser_test(1,subleq_1, expected_1, 1) 
+		&& parser_test(2,subleq_2, expected_2, 2)
+		&& parser_passOne_test(3, "./asm/two_label.cade", expected_firstPass_1, 9);
+		&& parser_passTwo_test(4, "./asm/two_label.cade", expected_secondPass_2, 9);
 }
 
 

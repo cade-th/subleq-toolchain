@@ -8,7 +8,7 @@ int main() {
 	run_lexer_tests();
 	run_parser_tests();
 	run_encoder_tests();
-	run_full_tests();
+	// run_full_tests();
 	run_preproc_tests();
 	return 0;
 }

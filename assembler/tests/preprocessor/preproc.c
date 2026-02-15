@@ -32,7 +32,7 @@ static bool preproc_test_direct(int test_num, char *input) {
 }
 
 // This test is hardocded shit need to make a better one
-static bool preproc_test_file(int test_num, char *path) {
+static bool preproc_test_passOne(int test_num, char *path) {
 
 	File file = io_file_read(path);
 
@@ -40,12 +40,10 @@ static bool preproc_test_file(int test_num, char *path) {
 
 	Preproc preproc = preproc_init(tokens);
 
-	preprocess(&preproc);
+	pass_one(&preproc);
 
-	MNT_Entry *expected_1 = NULL;
-	MNT_Entry *expected_2 = NULL;
-	HASH_FIND(preproc.mnt, "VAR_1", expected_1, MNT_Entry);
-	HASH_FIND(preproc.mnt, "VAR_2", expected_2, MNT_Entry);
+	MNT_Entry *expected_1 = HASH_FIND(preproc.mnt, "VAR_1", MNT_Entry);
+	MNT_Entry *expected_2 = HASH_FIND(preproc.mnt, "VAR_2", MNT_Entry);
 
 	// Check if the correct insertions to the MNT are done
 	if (strcmp(expected_1->key, "VAR_1") != 0) {
@@ -60,18 +58,20 @@ static bool preproc_test_file(int test_num, char *path) {
 	// check the contents of the macros
 	char *expected_literal_1 = "56";
 	char *expected_literal_2 = "34";
-	char *expected_literal_3 = "57";
-	char *expected_literal_4 = "324";
-	char *expected_literal_5 = "5";
+	char *expected_literal_3 = "32";
+	char *expected_literal_4 = "57";
+	char *expected_literal_5 = "324";
+	char *expected_literal_6 = "5";
 	if (strcmp(preproc.mdt[0][0].literal, expected_literal_1) != 0
 	||  strcmp(preproc.mdt[0][1].literal, expected_literal_2) != 0
+	||  strcmp(preproc.mdt[0][2].literal, expected_literal_3) != 0
 	) {
 		printf("Wrong Token Inserted into first macro\n");
 		return false;
 	}
-	if (strcmp(preproc.mdt[1][0].literal, expected_literal_3) != 0
-	||  strcmp(preproc.mdt[1][1].literal, expected_literal_4) != 0
-	||  strcmp(preproc.mdt[1][2].literal, expected_literal_5) != 0
+	if (strcmp(preproc.mdt[1][0].literal, expected_literal_4) != 0
+	||  strcmp(preproc.mdt[1][1].literal, expected_literal_5) != 0
+	||  strcmp(preproc.mdt[1][2].literal, expected_literal_6) != 0
 	) {
 		printf("Wrong Token Inserted into second macro\n");
 		return false;
@@ -80,9 +80,53 @@ static bool preproc_test_file(int test_num, char *path) {
 	return true;
 }
 
+Token expected_output[] = {
+	{"START", LABEL},
+	{"56", INT},
+	{"34", INT},
+	{"32", INT},
+	{"57", INT},
+	{"324", INT},
+	{"5", INT},
+	{"3", INT},
+	{"9", INT},
+	{"3", INT},
+	{"2", INT},
+	{"3", INT},
+	{"4", INT}
+};
+
+static bool preproc_test_passTwo(int test_num, char *path, Token *expected_tokens, int expected_tokens_size) {
+
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+
+	Preproc preproc = preproc_init(tokens);
+
+	Token *output = preprocess(&preproc);
+
+	// need to check size before this
+	for (int i=0; i < expected_tokens_size; i++) {
+		if (output[i].type != expected_tokens[i].type) {
+			printf("Incorrect token type for index %d: expected %d, got %d\n", i, expected_tokens[i].type, output[i].type);
+			return false;	
+		};
+		if (strcmp(output[i].literal, expected_tokens[i].literal)) {
+			printf("Incorrect token literal for index %d: expected %s, got %s\n", i, expected_tokens[i].literal, output[i].literal);	
+			return false;
+		}
+	};
+
+
+	return true;
+}
+
+
 static bool preproc() {
 	return 
-	 preproc_test_file(1, "asm/two_macro.cade");
+	 preproc_test_passOne(1, "asm/two_macro.cade") 
+	 && preproc_test_passTwo(2, "asm/two_macro.cade", expected_output, 13);
 }
 
 void run_preproc_tests() {

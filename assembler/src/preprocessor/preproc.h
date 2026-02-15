@@ -25,4 +25,6 @@ typedef struct {
 } Preproc;
 
 Preproc preproc_init(Token *input);
-void preprocess(Preproc *self);
+Token *preprocess(Preproc *self);
+Token *pass_two(Preproc *self);
+void pass_one(Preproc *self);

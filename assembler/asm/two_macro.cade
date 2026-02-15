@@ -1,4 +1,4 @@
-#define VAR_1 56 34
+#define VAR_1 56 34 32
 
 endM
 
@@ -7,5 +7,7 @@ endM
 endM
 
 START:
+	VAR_1
+	VAR_2
 	3 9 3
 	2 3 4

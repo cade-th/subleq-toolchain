@@ -20,8 +20,7 @@ Token expected_2[] = {
 	{"VAR_1", SYMBOL},
 	{"56", INT},	
 	{"endM", SYMBOL},
-	{"START", SYMBOL},
-	{":", COLON},
+	{"START", LABEL},
 	{"10", INT},
 	{"10", INT},
 	{"3", INT},
@@ -31,29 +30,82 @@ Token expected_2[] = {
 	{" ", Eof}
 };
 
-static bool lexer_basic_test(char *input, int expected_tokens_size, Token expected_tokens[]) {
-	
+Token expected_3[] = {
+	{"START", LABEL},
+	{"34",    INT}, 
+	{"5",     INT},
+	{"3",     INT},
+	{"23",    INT},
+	{"5",     INT},
+	{"LOOP",  SYMBOL},
+	{"LOOP",  LABEL},
+	{"45",    INT},   
+	{"3",     INT},  
+	{"6",     INT}, 
+	{" ",     Eof} 
+};
 
-	Lexer lexer = lexer_init(input);
+char* token_type_to_str(Token_t type) {
+    switch(type) {
+        case SYMBOL: return "SYMBOL";
+        case LABEL:  return "LABEL";
+        case INT:    return "INT";
+        default:     return "UNKNOWN";
+    }
+}
 
-	Token *output = lex(&lexer);
-	// need to check size before this
-	for (int i=0; i < expected_tokens_size; i++) {
-		if (output[i].type != expected_tokens[i].type) {
-			printf("Incorrect token type for index %d: expected %d, got %d\n", i, expected_tokens[i].type, output[i].type);
-			return false;	
-		};
-		if (strcmp(output[i].literal, expected_tokens[i].literal)) {
-			printf("Incorrect token literal for index %d: expected %s, got %s\n", i, expected_tokens[i].literal, output[i].literal);	
-			return false;
-		}
-	};
-	
-	return true;
+bool compare_tokens(int index, Token expected, Token actual) {
+    if (actual.type != expected.type) {
+        printf("\n[FAILED] Token Type Mismatch at index %d\n", index);
+        printf("  Expected: %-10s (type %d)\n", token_type_to_str(expected.type), expected.type);
+        printf("  Got:      %-10s (type %d)\n", token_type_to_str(actual.type), actual.type);
+        printf("  Literal context: \"%s\"\n", actual.literal);
+        return false;
+    }
+
+    if (strcmp(actual.literal, expected.literal) != 0) {
+        printf("\n[FAILED] Token Literal Mismatch at index %d\n", index);
+        printf("  Expected: \"%s\"\n", expected.literal);
+        printf("  Got:      \"%s\"\n", actual.literal);
+        printf("  Type:     %s\n", token_type_to_str(actual.type));
+        return false;
+    }
+
+    return true;
+}
+
+static bool lexer_basic_test(char *input, int expected_size, Token expected_tokens[]) {
+    Lexer lexer = lexer_init(input);
+    Token *output = lex(&lexer);
+
+    for (int i = 0; i < expected_size; i++) {
+        if (!compare_tokens(i, expected_tokens[i], output[i])) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+static bool lexer_file_test(char *file_path, int expected_size, Token expected_tokens[]) {
+    File file = io_file_read(file_path);
+
+    Lexer lexer = lexer_init(file.data);
+    Token *output = lex(&lexer);
+
+    for (int i = 0; i < expected_size; i++) {
+        if (!compare_tokens(i, expected_tokens[i], output[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static bool lexer() {
-	return lexer_basic_test(input_2, 13, expected_2);	
+	return 
+	lexer_basic_test(input_2, 13, expected_2) &&
+	lexer_file_test("./asm/two_label.cade", 12, expected_3);	
 }
 
 
