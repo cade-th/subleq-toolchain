@@ -1,5 +1,7 @@
 #pragma once
 #include "../lexer/lexer.h"
+#include "../util/hashmap.h"
+#include "../util/dyn_array.h"
 
 typedef struct {
 	Token value;
@@ -7,7 +9,7 @@ typedef struct {
 } Parameter;
 
 typedef struct {
-	char *name;
+	char *key;
 	int argc;
 	Parameter *parameters;
 	int mdt_index;
@@ -15,14 +17,12 @@ typedef struct {
 
 typedef struct {
 	Token *input;	
-	MNT_Entry *mnt;
+	// This is a hashmap
+	MNT_Entry *mnt[HASH_CAPACITY];
+	// This is a 2D array of Tokens
+	Token *mdt[256];
+	int macro_count;
 } Preproc;
-
-// MDT
-// This will be the macro definition table that stores the body of the macro as an array of tokens, so an array of arrays
-typedef struct {
-	Token *tokens;
-} Macro;
 
 Preproc preproc_init(Token *input);
 void preprocess(Preproc *self);

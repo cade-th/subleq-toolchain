@@ -1,0 +1,11 @@
+#define VAR_1 56 34
+
+endM
+
+#define VAR_2 57 324 5
+
+endM
+
+START:
+	3 9 3
+	2 3 4

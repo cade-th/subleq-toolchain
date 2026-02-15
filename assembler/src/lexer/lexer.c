@@ -58,11 +58,12 @@ static char *read_number(Lexer *self) {
 }
 
 static char *read_symbol(Lexer *self) {
-	int position = self->position;
-	while (isalpha(self->ch)) {
-		read_char(self);
-	}
-	return strndup(self->input + position, self->position - position);
+    int position = self->position;
+    // Symbols usually allow letters, numbers (after the first char), and underscores
+    while (isalnum(self->ch) || self->ch == '_') {
+        read_char(self);
+    }
+    return strndup(self->input + position, self->position - position);
 }
 
 Token next_token(Lexer *self) {

@@ -2,10 +2,12 @@
 #include <string.h>
 #include "../..//src/lexer/lexer.h"
 #include "lexer_tests.h"
+#include "../../src/util/io.h"
 
 char *input_2 = "        \
 			 \
-#define VAR 7            \ 
+#define VAR_1 56	 \
+endM                     \
 			 \
 START:                   \
 	10 10 3          \
@@ -15,8 +17,9 @@ START:                   \
 Token expected_2[] = {
 	{"#", HASH},
 	{"define", SYMBOL},
-	{"VAR", SYMBOL},
-	{"7", INT},	
+	{"VAR_1", SYMBOL},
+	{"56", INT},	
+	{"endM", SYMBOL},
 	{"START", SYMBOL},
 	{":", COLON},
 	{"10", INT},

@@ -1,0 +1,5 @@
+#define VAR 7
+
+START:
+	2 9 3
+	2 3 9
