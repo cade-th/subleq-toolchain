@@ -16,9 +16,9 @@ uint8_t *encode(Encoder *self, int instruction_cnt) {
 	// is this right?
 	// we need a way to determine how many parsed instructions there are here
 	for (int i=0; i < instruction_cnt; i++) {
-		ARRAY_PUSH(output, atoi(self->input[i].op_a));
-		ARRAY_PUSH(output, atoi(self->input[i].op_b));
-		ARRAY_PUSH(output, atoi(self->input[i].op_c));
+		ARRAY_PUSH(output, self->input[i].op_a);
+		ARRAY_PUSH(output, self->input[i].op_b);
+		ARRAY_PUSH(output, self->input[i].op_c);
 	}
 	return output;
 }

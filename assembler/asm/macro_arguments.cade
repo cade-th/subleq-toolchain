@@ -1,0 +1,5 @@
+#define SET(V) V
+
+START:
+	45 56 6
+	SET(4) 3 5

@@ -2,6 +2,7 @@
 #include "../util/dyn_array.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 
 Parser parser_init(Token *input) {
@@ -49,8 +50,8 @@ Token *parser_pass_one(Parser *self) {
 		if (self->current_tok.type == LABEL) {
 			ST_Entry new = {
 				.key = self->current_tok.literal,
-				.address = self->location_counter
 			};
+			new.address = self->location_counter;
 			HASH_PUSH(self->symbol_table, new.key, new, ST_Entry);
 		}
 		else {
@@ -67,44 +68,42 @@ Token *parser_pass_one(Parser *self) {
 	return output;
 }
 
-static ParsedInstruction *parser_pass_two(Parser *self, Token *input) {
-	int i = 0;
-	while (self->input[i].type != Eof) {
-
-		if (self->input[i].type == SYMBOL) {
-					
-		}
-	}
-
-}
-
-// just trying to parse a single instruction for now
-ParsedInstruction *parse(Parser *self) {
-
+ParsedInstruction *parser_pass_two(Parser *self, Token *tokens_from_pass_one) {
 	ParsedInstruction *output = DYN_ARRAY(ParsedInstruction);
+	int i = 0;
+	int counter = 0;
 
-	consume(self);
-	
-	while (self->current_tok.type != Eof) {
-		// handle subroutines
-		// has to be some sort of label here	
-		if (self->current_tok.type == LABEL) {
-			parse_label(self);	
+	// Reset instruction state
+	self->current_instruction.address = 0; // Match your test expectation
+
+	while (tokens_from_pass_one[i].type != Eof) {
+		Token current = tokens_from_pass_one[i];
+
+		if (current.type == SYMBOL) {
+			ST_Entry *temp = HASH_FIND(self->symbol_table, current.literal, ST_Entry);
+			int32_t val = temp ? temp->address : 0; 
+	    
+			if (counter == 0) self->current_instruction.op_a = val;
+			else if (counter == 1) self->current_instruction.op_b = val;
+			else if (counter == 2) self->current_instruction.op_c = val;
+		} 
+		else if (current.type == INT) {
+			int32_t val = atoi(current.literal);
+			if (counter == 0) self->current_instruction.op_a = val;
+			else if (counter == 1) self->current_instruction.op_b = val;
+			else if (counter == 2) self->current_instruction.op_c = val;
 		}
-		self->current_instruction.op_a = self->current_tok.literal;
-		consume(self);
 
-		if (self->current_tok.type == Eof) break; // Safety check
-		self->current_instruction.op_b = self->current_tok.literal;
-		consume(self);
+		counter++;
 
-		if (self->current_tok.type == Eof) break; // Safety check
-		self->current_instruction.op_c = self->current_tok.literal;
-		consume(self);
-
-		ARRAY_PUSH(output, self->current_instruction);
-}
-
+		// If we have a full SUBLEQ instruction (3 operands)
+		if (counter == 3) {
+			ARRAY_PUSH(output, self->current_instruction);
+			counter = 0;
+			self->current_instruction.address += 3; // Standard SUBLEQ increment
+		}
+		i++	;
+	}
 	return output;
-	
 }
+

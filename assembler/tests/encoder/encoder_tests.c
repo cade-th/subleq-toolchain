@@ -6,7 +6,7 @@
 #include <string.h>
 
 static ParsedInstruction input_1[] = {
-	{"subleq", "0", "1", "2", 0}
+	{"subleq", 0, 1, 2, 0}
 };
 
 static uint8_t expected_1[] = {
@@ -14,8 +14,8 @@ static uint8_t expected_1[] = {
 };
 
 static ParsedInstruction input_2[] = {
-	{"subleq", "0", "1", "2", 0},
-	{"subleq", "3", "4", "5", 0}
+	{"subleq", 0, 1, 2, 0},
+	{"subleq", 3, 4, 5, 3}
 };
 
 static uint8_t expected_2[] = {

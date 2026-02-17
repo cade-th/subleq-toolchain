@@ -8,10 +8,10 @@ typedef struct {
 	// could also just call this IR
 	// probbly just make these all subleq
 	char *label;
-	char *op_a;
-	char *op_b;
-	char *op_c;
-	uint16_t address;
+	int32_t op_a;
+	int32_t op_b;
+	int32_t op_c;
+	uint32_t address;
 } ParsedInstruction;
 
 typedef struct {
@@ -23,7 +23,7 @@ typedef struct {
 
 typedef struct {
 	char *key;
-	uint16_t address;
+	uint32_t address;
 } ST_Entry;
 
 typedef struct {
@@ -38,3 +38,4 @@ typedef struct {
 Parser parser_init(Token *input);
 ParsedInstruction *parse(Parser *self);
 Token *parser_pass_one(Parser *self);
+ParsedInstruction *parser_pass_two(Parser *self, Token *input);

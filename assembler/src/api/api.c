@@ -4,6 +4,7 @@
 // Project API structure/wishlist
 // Allows for ease of use and incremental steps in the assembling process
 
+/*
 Token *tokenize_api(char *src_code) {
 	Lexer lexer = lexer_init(src_code);Token *output = lex(&lexer);
 	return output;
@@ -33,3 +34,4 @@ void assemble_api(char *src_code) {
 	fwrite(output, 1, code_size, file);
 	fclose(file);
 }
+*/
