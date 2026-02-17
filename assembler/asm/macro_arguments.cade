@@ -1,5 +1,6 @@
-#define SET(V) V
+#define JMP(dest) 0 0 dest
+endM
 
 START:
 	45 56 6
-	SET(4) 3 5
+	JMP(2)

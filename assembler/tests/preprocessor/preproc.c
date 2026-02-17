@@ -3,34 +3,6 @@
 #include "../../src/util/hashmap.h"
 #include "../../src/util/io.h" 
 
-// finding symbols should be easy just by looking at next and seeing if it's a colon
-static char *input_1 = "        \
-			 \
-#define VAR 7            \
-\
-#define VAR_2 3          \
-			 \
-#ifdef		         \
-			 \
-START:                   \
-	10 10 3          \
-	10 12 3          \
-";
-
-
-static bool preproc_test_direct(int test_num, char *input) {
-
-	File file = io_file_read("../../asm/one_macro.cade");
-
-	Lexer lexer = lexer_init(input); Token *tokens = lex(&lexer);
-
-	Preproc preproc = preproc_init(tokens);
-
-	preprocess(&preproc);
-
-	return false;
-}
-
 // This test is hardocded shit need to make a better one
 static bool preproc_test_passOne(int test_num, char *path) {
 
@@ -80,7 +52,7 @@ static bool preproc_test_passOne(int test_num, char *path) {
 	return true;
 }
 
-Token expected_output[] = {
+Token expected_output_1[] = {
 	{"START", LABEL},
 	{"56", INT},
 	{"34", INT},
@@ -96,6 +68,178 @@ Token expected_output[] = {
 	{"4", INT}
 };
 
+
+
+static bool preproc_test_arguments_1(int test_num, char *path) {
+
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+
+	Preproc preproc = preproc_init(tokens);
+
+	pass_one(&preproc);
+
+	MNT_Entry *expected_1 = HASH_FIND(preproc.mnt, "JMP", MNT_Entry);
+
+
+	// Check if the correct insertions to the MNT are done
+	if (strcmp(expected_1->key, "JMP") != 0) {
+		printf("Wrong key for JMP\n");
+		return false; 
+	}
+
+	if (ARRAY_LENGTH(expected_1->parameters) != 1) {
+		printf("Incorrect number of arguments, got %d\n", ARRAY_LENGTH(expected_1->parameters));
+		return false;
+	}
+
+	// check the contents of the macro
+	if (strcmp(expected_1->parameters[0].value.literal, "dest") != 0) {
+		printf("Paramter value wrong\n");
+		return false;
+	}
+
+	return true;
+}
+
+static Token expected_output_arguments[] = {
+	{"START", LABEL},
+	{"45", INT},
+	{"56", INT},
+	{"6", INT},
+	{"0", INT},
+	{"0", INT},
+	{"2", INT},
+	{" ", Eof}
+};
+
+static Token expected_recursion[] = {
+    {"START", LABEL},
+    {"34", INT},
+    {"4", INT},
+    {"5", INT},
+    {"0", INT},     // From JMP
+    {"0", INT},     // From JMP
+    {"2", INT},     // Expanded from TARGET(2)
+    {" ", Eof},
+};
+
+static bool preproc_test_recursive_1(int test_num, char *path) {
+
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+
+	Preproc preproc = preproc_init(tokens);
+
+	pass_one(&preproc);
+
+	MNT_Entry *expected_1 = HASH_FIND(preproc.mnt, "TARGET", MNT_Entry);
+	MNT_Entry *expected_2 = HASH_FIND(preproc.mnt, "JMP", MNT_Entry);
+
+
+	// Check if the correct insertions to the MNT are done
+	if (strcmp(expected_2->key, "JMP") != 0) {
+		printf("Wrong key for JMP\n");
+		return false; 
+	}
+
+	// Check if the correct insertions to the MNT are done
+	if (strcmp(expected_1->key, "TARGET") != 0) {
+		printf("Wrong key for JMP\n");
+		return false; 
+	}
+
+
+	if (ARRAY_LENGTH(expected_2->parameters) != 1) {
+		printf("Incorrect number of arguments, got %d\n", ARRAY_LENGTH(expected_2->parameters));
+		return false;
+	}
+
+	if (ARRAY_LENGTH(expected_1->parameters) != 1) {
+		printf("Incorrect number of arguments, got %d\n", ARRAY_LENGTH(expected_1->parameters));
+		return false;
+	}
+
+	// check the contents of the macro
+	if (strcmp(expected_2->parameters[0].value.literal, "dest") != 0) {
+		printf("Parameter for JMP value wrong\n");
+		return false;
+	}
+	
+	if (strcmp(expected_1->parameters[0].value.literal, "T") != 0) {
+		printf("Parameter value for TARGET wrong\n");
+		return false;
+	}
+
+	return true;
+}
+
+
+// testing pass 2 for arguments
+static bool preproc_test_recursive_2(
+	int test_num, 
+	char *path, 
+	Token *expected_tokens, 
+	int expected_tokens_size) 
+{
+
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+
+	Preproc preproc = preproc_init(tokens);
+
+	Token *output = preprocess(&preproc);
+
+	for (int i=0; i < expected_tokens_size; i++) {
+		if (output[i].type != expected_tokens[i].type) {
+			printf("Test #%d: Incorrect token type for index %d: expected %d, got %d\n", test_num ,i, expected_tokens[i].type, output[i].type);
+			return false;	
+		};
+		if (strcmp(output[i].literal, expected_tokens[i].literal)) {
+			printf("Test #%d: Incorrect token literal for index %d: expected %s, got %s\n", test_num, i, expected_tokens[i].literal, output[i].literal);	
+			return false;
+		}
+	};
+
+	return true;
+}
+
+
+
+
+// testing pass 2 for arguments
+static bool preproc_test_arguments_2(
+	int test_num, 
+	char *path, 
+	Token *expected_tokens, 
+	int expected_tokens_size) 
+{
+
+	File file = io_file_read(path);
+
+	Lexer lexer = lexer_init(file.data); Token *tokens = lex(&lexer);
+
+	Preproc preproc = preproc_init(tokens);
+
+	Token *output = preprocess(&preproc);
+
+	for (int i=0; i < expected_tokens_size; i++) {
+		if (output[i].type != expected_tokens[i].type) {
+			printf("Test #%d: Incorrect token type for index %d: expected %d, got %d\n", test_num ,i, expected_tokens[i].type, output[i].type);
+			return false;	
+		};
+		if (strcmp(output[i].literal, expected_tokens[i].literal)) {
+			printf("Test #%d: Incorrect token literal for index %d: expected %s, got %s\n", test_num, i, expected_tokens[i].literal, output[i].literal);	
+			return false;
+		}
+	};
+
+	return true;
+}
+
 static bool preproc_test_passTwo(int test_num, char *path, Token *expected_tokens, int expected_tokens_size) {
 
 	File file = io_file_read(path);
@@ -109,11 +253,11 @@ static bool preproc_test_passTwo(int test_num, char *path, Token *expected_token
 	// need to check size before this
 	for (int i=0; i < expected_tokens_size; i++) {
 		if (output[i].type != expected_tokens[i].type) {
-			printf("Incorrect token type for index %d: expected %d, got %d\n", i, expected_tokens[i].type, output[i].type);
+			printf("Test #%d: Incorrect token type for index %d: expected %d, got %d\n", test_num, i, expected_tokens[i].type, output[i].type);
 			return false;	
 		};
 		if (strcmp(output[i].literal, expected_tokens[i].literal)) {
-			printf("Incorrect token literal for index %d: expected %s, got %s\n", i, expected_tokens[i].literal, output[i].literal);	
+			printf("Test #%d: Incorrect token literal for index %d: expected %s, got %s\n",test_num, i, expected_tokens[i].literal, output[i].literal);	
 			return false;
 		}
 	};
@@ -125,8 +269,12 @@ static bool preproc_test_passTwo(int test_num, char *path, Token *expected_token
 
 static bool preproc() {
 	return 
-	 preproc_test_passOne(1, "asm/two_macro.cade") 
-	 && preproc_test_passTwo(2, "asm/two_macro.cade", expected_output, 13);
+	 preproc_test_passOne(1, "asm/two_macro.cade") &&
+	 preproc_test_passTwo(2, "asm/two_macro.cade", expected_output_1, 13) &&
+	 preproc_test_arguments_1(3, "asm/macro_arguments.cade") &&
+	 preproc_test_arguments_2(4, "asm/macro_arguments.cade", expected_output_arguments, 8) &&
+	 preproc_test_recursive_1(5, "asm/recursive.cade") &&
+	 preproc_test_recursive_2(6, "asm/recursive.cade", expected_recursion, 8);
 }
 
 void run_preproc_tests() {

@@ -8,7 +8,7 @@
 // and then returns that pointer as a void pointer then is
 // then casted to an input type in order to make this data
 // structure generic
-int hash(char *string) {
+unsigned int hash(char *string) {
    unsigned long hash = 5381;
    int c;
    while ((c = *string++)) {

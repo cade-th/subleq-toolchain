@@ -2,10 +2,10 @@
 #include "../parser/parser.h"
 
 typedef struct {
-	ParsedInstruction *input;	
-	char *output;
+	int32_t *input;	
+	int32_t *output;
 } Encoder;
 
-Encoder encoder_init(ParsedInstruction *input);
+Encoder encoder_init(int32_t *input);
 
-uint8_t *encode(Encoder *self, int instruction_cnt);
+int32_t *encode(Encoder *self, int instruction_cnt);

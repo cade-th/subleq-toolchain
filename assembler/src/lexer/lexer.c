@@ -82,9 +82,36 @@ Token next_token(Lexer *self) {
 	switch (self->ch) {
 		case '#': tok.type = HASH; tok.literal = strdup("#"); break;
 		case '$': tok.type = DOLLAR; tok.literal = strdup("$"); break;
+		case '(': tok.type = RPAREN; tok.literal = strdup("("); break;
+		case ')': tok.type = LPAREN; tok.literal = strdup(")"); break;
 		case ';': {
 			remove_comment(self);
 			return next_token(self);
+		}
+        case ',': {
+            tok.type = COMMA;
+            tok.literal = strdup(",");
+            break;
+        }
+		case '-': {
+			// Check if we have a negative number
+			if (isdigit(self->input[self->read_position])) {
+				int start_pos = self->position;
+				read_char(self); // consume '-'
+				
+				while (isdigit(self->ch)) {
+					read_char(self);
+				}
+				
+				tok.type = INT;
+				tok.literal = strndup(self->input + start_pos, self->position - start_pos);
+				return tok;
+			}
+			// Otherwise fall through to default illegal handling or separate minus token
+			tok.type = ILLEGAL;
+			tok.literal = strndup("-", 1);
+			read_char(self);
+			return tok;
 		}
 		case 0: 
 		    tok.type = Eof; 

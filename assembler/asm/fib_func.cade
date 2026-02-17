@@ -1,0 +1,89 @@
+#define S(a,b,c) a b c
+endM
+#define HLT Z Z -1
+endM
+
+START:
+    ;; 1. Initialize variables
+    ;; a = 0
+    S(a, a, N1)
+N1:
+    
+    ;; b = 1
+    S(b, b, N2)
+N2:
+    S(ONE, Z, N3)
+N3:
+    S(Z, b, N4) 
+N4:
+    S(Z, Z, N5)
+N5:
+
+    ;; c = COUNT (7)
+    S(c, c, N6)
+N6:
+    S(COUNT, Z, N7)
+N7:
+    S(Z, c, N8)
+N8:
+    S(Z, Z, LOOP)
+
+LOOP:
+    ;; 2. Loop Body
+    ;; d = a 
+    S(d, d, L1)
+L1:
+    S(a, Z, L2)
+L2:
+    S(Z, d, L3)
+L3:
+    S(Z, Z, L4)
+L4:
+
+    ;; d = d + b (add d, b -- implies d += b)
+    S(b, Z, L5)
+L5:
+    S(Z, d, L6)
+L6:
+    S(Z, Z, L7)
+L7:
+
+    ;; a = b (mw a, b)
+    S(a, a, L8)
+L8:
+    S(b, Z, L9)
+L9:
+    S(Z, a, L10)
+L10:
+    S(Z, Z, L11)
+L11:
+
+    ;; b = d (mw b, d)
+    S(b, b, L12)
+L12:
+    S(d, Z, L13)
+L13:
+    S(Z, b, L14)
+L14:
+    S(Z, Z, L15)
+L15:
+
+    ;; c = c - 1 (sbb c, 1)
+
+    ;; c = c - 1 (sbb c, 1)
+    ;; If result (c-1) <= 0 (meaning c was 1 or less), jump to DONE.
+    S(ONE, c, DONE)
+
+    ;; Fallthrough: result > 0 (c was > 1). Not done yet.
+    S(Z, Z, LOOP)
+
+DONE:
+    HLT
+
+a: 0
+b: 0
+c: 0
+d: 0
+ONE: 1
+COUNT: 7
+Z: 0

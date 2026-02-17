@@ -17,6 +17,8 @@ typedef struct {
 
 typedef struct {
 	Token *input;	
+	int position;
+	int read_position;
 	// This is a hashmap
 	MNT_Entry *mnt[HASH_CAPACITY];
 	// This is a 2D array of Tokens

@@ -6,21 +6,12 @@
 
 
 Parser parser_init(Token *input) {
-	ParsedInstruction current = {
-		.label = "subleq",
-		.op_a = 0,
-		.op_b = 0,
-		.op_c = 0,
-		.address = 0,
-	};
-
 	Parser parser = {
 		.input = input,
 		.current_tok = input[0],
 		.read_position = 0,
-		.current_instruction = current,
-		.location_counter = 0
-		
+		.location_counter = 0,
+		.current_instruction = 0
 	};
 	return parser;
 }
@@ -68,41 +59,35 @@ Token *parser_pass_one(Parser *self) {
 	return output;
 }
 
-ParsedInstruction *parser_pass_two(Parser *self, Token *tokens_from_pass_one) {
-	ParsedInstruction *output = DYN_ARRAY(ParsedInstruction);
+int32_t *parser_pass_two(Parser *self, Token *tokens_from_pass_one) {
+	int32_t *output = DYN_ARRAY(int32_t);
 	int i = 0;
-	int counter = 0;
-
-	// Reset instruction state
-	self->current_instruction.address = 0; // Match your test expectation
 
 	while (tokens_from_pass_one[i].type != Eof) {
 		Token current = tokens_from_pass_one[i];
 
 		if (current.type == SYMBOL) {
-			ST_Entry *temp = HASH_FIND(self->symbol_table, current.literal, ST_Entry);
-			int32_t val = temp ? temp->address : 0; 
-	    
-			if (counter == 0) self->current_instruction.op_a = val;
-			else if (counter == 1) self->current_instruction.op_b = val;
-			else if (counter == 2) self->current_instruction.op_c = val;
+            // Special handling for 'N' (Next Instruction)
+            if (strcmp(current.literal, "N") == 0) {
+                int current_offset = ARRAY_LENGTH(output);
+                int next_instr = current_offset + (3 - (current_offset % 3));
+                ARRAY_PUSH(output, next_instr);
+            } else {
+			    ST_Entry *temp = HASH_FIND(self->symbol_table, current.literal, ST_Entry);
+			    if (temp == NULL) {
+				    fprintf(stderr, "Error: Undefined label '%s'\n", current.literal);
+				    exit(1);
+			    }
+			    int32_t val = temp->address; 
+			    ARRAY_PUSH(output, val);
+            }
 		} 
 		else if (current.type == INT) {
 			int32_t val = atoi(current.literal);
-			if (counter == 0) self->current_instruction.op_a = val;
-			else if (counter == 1) self->current_instruction.op_b = val;
-			else if (counter == 2) self->current_instruction.op_c = val;
+			ARRAY_PUSH(output, val);
 		}
 
-		counter++;
-
-		// If we have a full SUBLEQ instruction (3 operands)
-		if (counter == 3) {
-			ARRAY_PUSH(output, self->current_instruction);
-			counter = 0;
-			self->current_instruction.address += 3; // Standard SUBLEQ increment
-		}
-		i++	;
+		i++;
 	}
 	return output;
 }

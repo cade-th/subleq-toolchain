@@ -1,0 +1,82 @@
+#define S(a,b,c) a b c
+endM
+#define OUT(src, next) src -1 next
+endM
+#define HLT Z Z -1
+endM
+
+START:
+    ;; 1. Print '*' to show progress
+    OUT(CHAR, CONT)
+CONT:
+
+    ;; 2. Check if current number exceeds max (13)
+    ;; check = max
+    ;; check = check - a
+    ;; if check <= 0 goto DONE
+    
+    ;; Clear check
+    S(check, check, N1)
+N1:
+    ;; check = check + max (since check is 0, check = -(-max) = max)
+    S(max, Z, N2)
+N2:
+    S(Z, check, N3) 
+N3:
+    S(Z, Z, N4)
+N4:
+    
+    ;; check = check - a
+    S(a, check, CHECK_DONE)
+    
+    ;; 3. Update fibonacci numbers:
+    ;; t = a
+    ;; a = b
+    ;; b = t + b
+    
+    ;; t = a (using Z as intermediate)
+    S(t, t, N5)
+N5:
+    S(a, Z, N6)
+N6:
+    S(Z, t, N7)
+N7:
+    S(Z, Z, N8)
+N8:
+    
+    ;; a = b
+    S(a, a, N9)
+N9:
+    S(b, Z, N10)
+N10:
+    S(Z, a, N11)
+N11:
+    S(Z, Z, N12)
+N12:
+    
+    ;; b = b + t
+    S(t, Z, N13)
+N13:
+    S(Z, b, N14)
+N14:
+    S(Z, Z, LOOP)
+
+CHECK_DONE:
+    ;; If check <= 0, we are done.
+    ;; But wait, S(a, check, CHECK_DONE) branches if check <= 0 AFTER sub.
+    ;; If max=13, a=13. 13-13=0. <= 0. DONE. Correct.
+    S(Z, Z, DONE)
+
+LOOP:
+    S(Z, Z, START)
+
+DONE:
+    HLT
+    
+a: 1
+b: 1
+t: 0
+max: 13
+check: 0
+Z: 0
+CHAR: 42 

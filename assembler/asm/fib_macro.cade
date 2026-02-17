@@ -1,0 +1,46 @@
+#define S(a,b,c) a b c
+endM
+#define MV(src, dst) dst dst N src Z N Z dst N Z Z N
+endM
+#define ADD(src, dst) src Z N Z dst N Z Z N
+endM
+#define HLT Z Z -1
+endM
+
+START:
+    ;; a = 0
+    MV(Z, a)
+    ;; b = 1
+    MV(ONE, b)
+    ;; c = COUNT (7)
+    MV(COUNT, c)
+    S(Z, Z, LOOP)
+
+LOOP:
+    ;; d = a 
+    MV(a, d)
+    
+    ;; d = d + b
+    ADD(b, d)
+    
+    ;; a = b
+    MV(b, a)
+    
+    ;; b = d
+    MV(d, b)
+    
+    S(ONE, c, DONE)
+
+    ;; Fallthrough: Loop
+    S(Z, Z, LOOP)
+
+DONE:
+    HLT
+
+a: 0
+b: 0
+c: 0
+d: 0
+ONE: 1
+COUNT: 7
+Z: 0

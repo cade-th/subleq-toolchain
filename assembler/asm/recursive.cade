@@ -1,0 +1,10 @@
+#define TARGET(T) T
+endM
+
+#define JMP(dest) 0 0 TARGET(dest)
+endM
+
+START:
+	34 4 5
+	JMP(2)
+

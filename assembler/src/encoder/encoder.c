@@ -3,7 +3,7 @@
 #include "../util/dyn_array.h"
 #include <stdlib.h>
 
-Encoder encoder_init(ParsedInstruction *input) {
+Encoder encoder_init(int32_t *input) {
 	Encoder encoder = {
 		.input = input,
 		.output = 0
@@ -11,14 +11,13 @@ Encoder encoder_init(ParsedInstruction *input) {
 	return encoder;
 }
 
-uint8_t *encode(Encoder *self, int instruction_cnt) {
-	uint8_t *output = DYN_ARRAY(uint8_t);
-	// is this right?
-	// we need a way to determine how many parsed instructions there are here
+int32_t *encode(Encoder *self, int instruction_cnt) {
+	int32_t *output = DYN_ARRAY(int32_t);
+	// In the flat model, input is already the machine code (ints)
+    // So we just copy it. In a real scenario, this step might write to a binary file
+    // or handle endianness, but for now we just pass it through.
 	for (int i=0; i < instruction_cnt; i++) {
-		ARRAY_PUSH(output, self->input[i].op_a);
-		ARRAY_PUSH(output, self->input[i].op_b);
-		ARRAY_PUSH(output, self->input[i].op_c);
+		ARRAY_PUSH(output, self->input[i]);
 	}
 	return output;
 }

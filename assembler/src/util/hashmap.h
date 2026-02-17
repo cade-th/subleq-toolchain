@@ -32,4 +32,4 @@
 })
 
 // hash function
-int hash(char *string);
+unsigned int hash(char *string);

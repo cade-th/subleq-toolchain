@@ -45,6 +45,71 @@ Token expected_3[] = {
 	{" ",     Eof} 
 };
 
+
+static Token expected_4[] = {
+	{"#", HASH},
+	{"define", SYMBOL },
+	{"JMP", SYMBOL},
+	{"(", RPAREN},
+	{"dest", SYMBOL},
+	{")", LPAREN},
+	{"0", INT},
+	{"0", INT},
+	{"dest", SYMBOL},
+	{"endM", SYMBOL},
+	{"START", LABEL},
+	{"45", INT},
+	{"56", INT},
+	{"6", INT},
+	{"JMP", SYMBOL},
+	{"(", RPAREN},
+	{"2", INT},
+	{")", LPAREN},
+	{" ", Eof},
+};
+
+static Token expected_5[] = {
+
+    	{"#", HASH},
+	{"define", SYMBOL },
+	{"TARGET", SYMBOL},
+	{"(", RPAREN},
+	{"T", SYMBOL},
+	{")", LPAREN},
+	{"T", SYMBOL},
+	{"endM", SYMBOL},
+	{"#", HASH},
+	{"define", SYMBOL },
+	{"JMP", SYMBOL},
+	{"(", RPAREN},
+	{"dest", SYMBOL},
+	{")", LPAREN},
+	{"0", INT},
+	{"0", INT},
+	{"TARGET", SYMBOL},
+        {"(", RPAREN},
+	{"dest", SYMBOL},
+	{")", LPAREN},
+	{"endM", SYMBOL},
+	{"START", LABEL},
+	{"34", INT},
+	{"4", INT},
+	{"5", INT},
+	{"JMP", SYMBOL},
+	{"(", RPAREN},
+	{"2", INT},
+	{")", LPAREN},
+	{" ", Eof},
+};
+
+static Token expected_negative[] = {
+	{"-5", INT},
+	{"-12", INT},
+	{"0", INT},
+	{" ", Eof}
+};
+
+
 char* token_type_to_str(Token_t type) {
     switch(type) {
         case SYMBOL: return "SYMBOL";
@@ -105,7 +170,10 @@ static bool lexer_file_test(char *file_path, int expected_size, Token expected_t
 static bool lexer() {
 	return 
 	lexer_basic_test(input_2, 13, expected_2) &&
-	lexer_file_test("./asm/two_label.cade", 12, expected_3);	
+	lexer_file_test("./asm/two_label.cade", 12, expected_3) &&	
+	lexer_file_test("./asm/macro_arguments.cade", 19, expected_4) &&
+	lexer_file_test("./asm/recursive.cade", 30, expected_5) &&
+	lexer_basic_test("-5 -12 0", 4, expected_negative);	
 }
 
 
