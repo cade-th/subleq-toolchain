@@ -1,0 +1,15 @@
+# Verilator / Build Artifacts
+hw/obj_dir/
+subleq_sim
+hw/subleq_sim
+
+# Assembled Hex Files
+*.hex
+tests/*.hex
+
+# Simulation Traces
+*.vcd
+
+# Lua temporary files
+.DS_Store
+*.log

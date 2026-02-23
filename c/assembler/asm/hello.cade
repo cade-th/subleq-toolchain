@@ -1,0 +1,16 @@
+#define OUT(src, next) src -1 next
+endM
+#define HLT Z Z -1
+endM
+
+START:
+	OUT(H, N)
+	OUT(I, N)
+    OUT(NL, N)
+
+	HLT
+
+H: 72
+I: 105
+NL: 10
+Z: 0
