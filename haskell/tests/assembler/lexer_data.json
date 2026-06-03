@@ -1,0 +1,208 @@
+{
+    "one_instruction": {
+        "input": "0 0 -1",
+        "expected": [
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "-1"
+            }
+        ]
+    },
+    "two_instructions": {
+        "input": " \n\t0 0 4             \n\t0 0 -1            \n",
+        "expected": [
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "4"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "-1"
+            }
+        ]
+    },
+    "one_label": {
+        "input": "    \n\tSTART:         \n\t\t0 0 -1 \n",
+        "expected": [
+            {
+                "type": "LABEL",
+                "value": "START"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "-1"
+            }
+        ]
+    },
+    "two_labels": {
+        "input": "    \n\tSTART:         \n\t\t0 0 -1 \n\t\t       \n\tLOOP:          \n\t\t0 0 0  \n",
+        "expected": [
+            {
+                "type": "LABEL",
+                "value": "START"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "-1"
+            },
+            {
+                "type": "LABEL",
+                "value": "LOOP"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            }
+        ]
+    },
+    "one_macro": {
+        "input": "    \n\t#define VAR 0  \n\tSTART:         \n\t\t0 VAR -1 \n",
+        "expected": [
+            {
+                "type": "HASH",
+                "value": "#"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "define"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "VAR"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "LABEL",
+                "value": "START"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "VAR"
+            },
+            {
+                "type": "NUMBER",
+                "value": "-1"
+            }
+        ]
+    },
+    "two_macros": {
+        "input": "       \n\t#define VAR1 0    \n\t#define VAR2 7    \n\tSTART:            \n\t\t0 VAR1 3  \n\t\t0 VAR2 -1 \n",
+        "expected": [
+            {
+                "type": "HASH",
+                "value": "#"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "define"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "VAR1"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "HASH",
+                "value": "#"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "define"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "VAR2"
+            },
+            {
+                "type": "NUMBER",
+                "value": "7"
+            },
+            {
+                "type": "LABEL",
+                "value": "START"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "VAR1"
+            },
+            {
+                "type": "NUMBER",
+                "value": "3"
+            },
+            {
+                "type": "NUMBER",
+                "value": "0"
+            },
+            {
+                "type": "SYMBOL",
+                "value": "VAR2"
+            },
+            {
+                "type": "NUMBER",
+                "value": "-1"
+            }
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "simple_sub": {
+        "input": "6 7 3 0 0 -1 5 10",
+        "expected_memory": {
+            "7": 5
+        },
+        "expected_pc": -1
+    },
+    "loop_test": {
+        "input": "START: \n ONE Y HALT \n Z Z START \n HALT: \n Z Z -1 \n Y: 3 \n ONE: 1 \n Z: 0",
+        "expected_memory": {
+            "9": 0
+        },
+        "expected_pc": -1
+    },
+    "macro_hi": {
+        "input": "#define printH()\n 9 -1 3\n endm\n #define printI()\n 10 -1 6\n endm\n printH()\n printI()\n 0 0 -1\n H: 72\n I: 73",
+        "expected_output": "HI",
+        "expected_pc": -1
+    },
+    "macro_args": {
+        "input": "#define clear(target, next_addr)\n target target next_addr\n endm\n START:\n clear(Y, 3)\n clear(X, 6)\n 0 0 -1\n Y: 10\n X: 20",
+        "expected_memory": {
+            "9": 0,
+            "10": 0
+        },
+        "expected_pc": -1
+    }
+}

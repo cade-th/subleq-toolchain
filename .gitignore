@@ -1,0 +1,61 @@
+# Project Build Artifacts
+
+# JavaScript (js/)
+js/node_modules/
+js/package-lock.json
+js/npm-debug.log*
+
+# Python (python/)
+python/__pycache__/
+python/*.pyc
+python/*.pyo
+python/*.pyd
+python/.pytest_cache/
+python/.venv/
+
+# C++ (cpp/)
+cpp/*.o
+cpp/*.obj
+cpp/lexer_test
+cpp/assembler_test
+cpp/emu_test
+cpp/e2e_test
+cpp/*.exe
+cpp/*.out
+cpp/include/nlohmann/json.hpp
+
+# SQLite (sqlite/ & lua/tests/emu_sqlite/)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Lua (lua/)
+lua/*.vcd
+lua/*.hex
+lua/trace.vcd
+lua/tests/*.hex
+lua/tests/emu_sqlite/subleq_test.db
+
+# Go (go/)
+go/bin/
+go/pkg/
+go/tests/assembler/*.test
+go/tests/emu/*.test
+go/tests/end_to_end/*.test
+
+# Haskell (haskell/)
+haskell/dist/
+haskell/dist-newstyle/
+haskell/.ghc.environment.*
+haskell/*.hi
+haskell/*.o
+haskell/*.dyn_hi
+haskell/*.dyn_o
+
+# General / Temporary
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.lock

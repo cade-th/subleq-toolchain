@@ -1,0 +1,86 @@
+cabal-version:      3.0
+name:               subleq
+version:            0.1.0.0
+synopsis:           Subleq toolchain in Haskell
+category:           Compiler
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  Subleq.Lexer,
+                      Subleq.Assembler,
+                      Subleq.Emulator
+    build-depends:    base >=4.14 && <5,
+                      megaparsec,
+                      text,
+                      vector,
+                      containers,
+                      aeson,
+                      bytestring
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+executable subleq
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base >=4.14 && <5,
+                      subleq
+    hs-source-dirs:   app
+    default-language: GHC2021
+
+test-suite lexer-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          LexerTest.hs
+    build-depends:    base >=4.14 && <5,
+                      subleq,
+                      aeson,
+                      bytestring,
+                      containers,
+                      text
+    hs-source-dirs:   tests
+    default-language: GHC2021
+
+test-suite assembler-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          AssemblerTest.hs
+    build-depends:    base >=4.14 && <5,
+                      subleq,
+                      aeson,
+                      bytestring,
+                      containers,
+                      text
+    hs-source-dirs:   tests
+    default-language: GHC2021
+
+test-suite emu-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          EmulatorTest.hs
+    build-depends:    base >=4.14 && <5,
+                      subleq,
+                      aeson,
+                      bytestring,
+                      containers,
+                      text,
+                      vector
+    hs-source-dirs:   tests
+    default-language: GHC2021
+
+test-suite e2e-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          E2ETest.hs
+    build-depends:    base >=4.14 && <5,
+                      subleq,
+                      aeson,
+                      bytestring,
+                      containers,
+                      text,
+                      vector
+    hs-source-dirs:   tests
+    default-language: GHC2021

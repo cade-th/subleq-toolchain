@@ -1,0 +1,22 @@
+{
+    "label_resolution": {
+        "input": "START: 0 0 START",
+        "expected": [
+            0,
+            0,
+            0
+        ]
+    },
+    "macro_resolution": {
+        "input": "#define CLEAR(target) target target 3 endm\nSTART: CLEAR(X)\n0 0 -1\nX: 10",
+        "expected": [
+            6,
+            6,
+            3,
+            0,
+            0,
+            -1,
+            10
+        ]
+    }
+}

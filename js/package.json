@@ -1,0 +1,11 @@
+{
+    "name": "subleq-js-toolchain",
+    "version": "1.0.0",
+    "description": "Subleq assembler and emulator in JavaScript",
+    "main": "assembler.js",
+    "scripts": {
+        "test": "node tests/assembler/lexer_test.js && node tests/assembler/assembler_test.js && node tests/emu/emu_test.js && node tests/end_to_end/end_to_end_test.js"
+    },
+    "author": "",
+    "license": "ISC"
+}
